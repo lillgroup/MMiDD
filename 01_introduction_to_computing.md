@@ -9,7 +9,7 @@ autoscale: true
 ^ - **Welcome** to the Molecular Modelling in Drug Design lecture and to this **first part** which is about **programming with Python**.
 - The goal is to provide fundamental understanding of **how computers and programming work** and **how you can use them to solve problems**, not to turn you into programmers, but to make you **more effective researchers who can leverage computational tools** safely and effectively.
 - This course **assumes no prior knowledge in programming** because of the different backgrounds.
-- A bit about **my background**: My name is Sofiene Khiari, I'm a **first year PhD student in the computational pharmacy group in the Pharmazentrum**. I actually did the **master in drug sciences** and **finished my master's last December (come to me if you have questions)**. I'm a **pharmacist by training** but have been **programming my whole life basically**. I've also **worked for several years as a freelance web developper**.
+- A bit about **my background**: My name is Sofiene Khiari, I'm a **first year PhD student in the computational pharmacy group in the Pharmazentrum**. I actually did the **master in drug sciences** and **finished my master's last December (come to me if you have questions)**. I'm a **pharmacist by training** but have been **programming my whole life basically**. I have formal training in computer science and I've also **worked for several years as a freelance web developper**.
 
 ---
 
@@ -31,8 +31,6 @@ autoscale: true
 
 ^ I want take some time to **motivate you about why this is important**, so to **follow this lecture** but also take **another more detailed lecture** if you're interested.
 
-^ 8 minutes
-
 ---
 
 # Why Are We Here?
@@ -51,7 +49,7 @@ autoscale: true
 - **Current reality:** Upload data → automated analysis → Results in hours.
 - **This is possible because:** Either someone in the group knows how to program, or specialized software was developed for this task.
 - **Manual approach (without computational tools):** Measure each sample individually, calculate results by hand → Maybe several weeks of work.
-- **The critical gap:** However, most researchers know **how** to use the software, but not **what** it's actually doing.
+- **The critical gap:** However, a lot of researchers know **how** to use the software, but not **what** it's actually doing.
 
 ---
 
@@ -103,8 +101,6 @@ This gap in understanding creates issues:
 # Section 2: How Computers Actually Work
 
 ^ Now that you understand the motivation, let's explore how computers actually work...
-
-^ 15 minutes
 
 ---
 
@@ -210,8 +206,6 @@ Memory: RAM is fast temporary workspace, storage is permanent archive. The proce
 # Section 3: Building Blocks of Software
 
 ^ We've seen how computers work fundamentally. Now let's understand the building blocks that make software work...
-
-^ 15 minutes
 
 ---
 
@@ -511,6 +505,8 @@ A systematic problem-solving approach that breaks complex challenges into manage
 - **Debugging Nightmare:** You're stuck when (not if) things break
 - **Security Risks:** Vulnerabilities and potential data corruption
 
+^ OBVIOUS LIMITATION: AI tools can produce buggy code, but you can generally see that by just running it, so this is not what I'm focusing on here.
+
 ^ AI tools are powerful, but they have serious limitations that can be dangerous if you don't understand what they're producing.
 
 ^ Plausible but Wrong: **AI often generates code that runs without errors** but **can sometimes produce incorrect results**. The output looks professional and convincing, but without understanding the logic, you can't verify if it's actually doing what you need. In research, this means potentially publishing incorrect conclusions.
@@ -559,6 +555,7 @@ A systematic problem-solving approach that breaks complex challenges into manage
 **Then:** Python Programming Basics
 - Learn the actual programming language
 - Implement the solutions you designed in lesson 2
+- Need a Student GitHub account starting here
 
 **Finally:** Solve Real Problems in Code
 - Apply everything to solve the problems from lesson 2
