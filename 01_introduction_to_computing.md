@@ -555,7 +555,7 @@ A systematic problem-solving approach that breaks complex challenges into manage
 **Then:** Python Programming Basics
 - Learn the actual programming language
 - Implement the solutions you designed in lesson 2
-- Need a Student GitHub account starting here
+- Need a [Student GitHub account](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student) starting here
 
 **Finally:** Solve Real Problems in Code
 - Apply everything to solve the problems from lesson 2
