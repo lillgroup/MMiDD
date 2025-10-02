@@ -38,7 +38,7 @@ bsa = math.sqrt((height_cm * weight_kg) / 3600)
 drug_name = "Doxorubicin"
 dose_per_m2 = 60
 total_dose = bsa * dose_per_m2
-print(f"Ex1: BSA = sqrt({height_cm}×{weight_kg}/3600) = {bsa:.2f} m² → {drug_name} dose: {total_dose:.2f} mg\n")
+print(f"Ex1: BSA = sqrt({height_cm} x {weight_kg}/3600) = {bsa:.2f} m² → {drug_name} dose: {total_dose:.2f} mg\n")
 
 # Example 2: Drug elimination using math.exp()
 drug = "Theophylline"
@@ -65,7 +65,7 @@ patient_weight = 75.0
 bioavailability = 0.85
 total_volume = volume_distribution * patient_weight
 loading_dose = (target_concentration * total_volume) / bioavailability
-print(f"Ex4: Loading dose = ({target_concentration}×{total_volume:.1f})/{bioavailability} = {loading_dose:.1f} mg\n")
+print(f"Ex4: Loading dose = ({target_concentration}x{total_volume:.1f})/{bioavailability} = {loading_dose:.1f} mg\n")
 
 # Example 5: Drip rate using math.ceil()
 volume_ml = 1000
@@ -80,7 +80,7 @@ print(f"Ex5: IV drip rate = {drip_rate:.2f} drops/min → ceil() = {drip_rate_ro
 cylinder_radius = 3.5
 cylinder_height = 12.0
 volume_cubic_cm = math.pi * math.pow(cylinder_radius, 2) * cylinder_height
-print(f"Ex6: Cylinder volume = π×r²×h = {math.pi:.4f}×{cylinder_radius}²×{cylinder_height} = {volume_cubic_cm:.2f} cm³\n")
+print(f"Ex6: Cylinder volume = π x r² x h = {math.pi:.4f}x{cylinder_radius}² x {cylinder_height} = {volume_cubic_cm:.2f} cm³\n")
 
 # Example 7: pH using math.log10()
 h_concentration = 0.0001

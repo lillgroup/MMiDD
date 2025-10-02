@@ -28,7 +28,7 @@ print("Pharmacy Batch Processing System\n")
 
 # Example 1: Basic for loop
 drug_name = "Enoxaparin"
-dose_per_kg = 1.0
+dose_per_kg = 1.5
 patient_weights = [65.0, 78.5, 52.0, 90.0, 58.5]
 
 print(f"Ex1: {drug_name} at {dose_per_kg} mg/kg")
