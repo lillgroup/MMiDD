@@ -1,0 +1,7 @@
+Aspirin,325mg,8.50,2026-06-15
+Metformin,500mg,12.75,2025-11-30
+Lisinopril,10mg,15.00,2027-03-20
+Atorvastatin,20mg,22.50,2026-09-10
+Omeprazole,20mg,18.00,2025-12-31
+Amoxicillin,500mg,14.25,2026-08-05
+Ibuprofen,200mg,6.50,2027-01-15
