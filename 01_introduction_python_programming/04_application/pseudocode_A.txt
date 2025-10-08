@@ -1,0 +1,286 @@
+PROBLEM A: CELL VIABILITY SCREENING ANALYSIS
+
+PURPOSE: Process MTT assay data to find promising anti-cancer compounds
+
+INPUT FILE: viability_raw_data.csv
+OUTPUT FILES: Multiple results files and charts
+
+================================================================================
+STEP 1: SETUP AND READ THE DATA
+================================================================================
+
+Load required tools:
+  - pandas (for handling data tables)
+  - matplotlib (for creating charts)
+  - numpy (for calculations)
+
+Read the data file:
+  Open the CSV file called 'viability_raw_data.csv'
+  Store all the data in a table called 'raw_data'
+  
+Check what we got:
+  Print how many rows and columns we have
+  Show the first few rows to see the structure
+  Look for any completely missing information
+
+================================================================================
+STEP 2: SEPARATE CONTROLS FROM TEST COMPOUNDS
+================================================================================
+
+Split the data into three groups:
+  Group 1: All rows where compound name contains "DMSO" (negative control)
+  Group 2: All rows where compound name contains "Doxorubicin" (positive control) 
+  Group 3: All other rows (our test compounds)
+
+Basic data quality checks on ALL data:
+  FOR each absorbance reading in the data:
+    IF the reading is negative:
+      Add to problem list with note "negative reading"
+      Print warning message
+    IF the reading is extremely high (over 3.0):
+      Add to problem list with note "unusually high reading"
+      Print warning message  
+    IF the reading is missing:
+      Add to problem list with note "missing data"
+      Print warning message
+
+Keep a list of all problems we find
+
+================================================================================
+STEP 3: CHECK IF OUR CONTROLS WORKED PROPERLY
+================================================================================
+
+Analyze DMSO control (should show healthy cells):
+  Calculate the average of all DMSO readings
+  Calculate how spread out the DMSO readings are (standard deviation)
+  Calculate variability percentage = (spread / average) × 100
+  
+  IF variability percentage is over 15%:
+    Print "WARNING: DMSO controls are too variable"
+    Flag the whole experiment as questionable
+  
+  Store the DMSO average as our "baseline for healthy cells"
+  Print "Healthy cell baseline: [number]"
+
+Analyze Doxorubicin control (should show dead cells):
+  Calculate the average of all Doxorubicin readings
+  Calculate what percentage this is of the DMSO baseline
+  
+  IF this percentage is over 30%:
+    Print "WARNING: Positive control didn't kill cells properly"
+    Print "Expected less than 30% of healthy baseline, got [percentage]%"
+    Flag experiment as questionable
+  ELSE:
+    Print "Positive control worked correctly"
+
+================================================================================
+STEP 4: PROCESS EACH TEST COMPOUND
+================================================================================
+
+Create empty table to store our results with columns:
+  compound_name, concentration, average_reading, viability_percent, 
+  death_percent, number_of_replicates, variability_percent, data_quality
+
+Get list of all unique compound names from test data
+
+FOR each compound:
+  Get list of all concentrations tested for this compound
+  
+  FOR each concentration:
+    Find all readings for this compound at this concentration
+    Get the actual absorbance numbers for these replicates
+    
+    Remove any readings we flagged as problematic earlier
+    Count how many good readings we have left
+    
+    IF we have fewer than 2 good readings:
+      Mark data_quality as "not_enough_data"  
+      Set all calculations to "cannot_calculate"
+    ELSE:
+      Calculate average of the good readings
+      Calculate how spread out the readings are
+      Calculate variability_percent = (spread / average) × 100
+      
+      Calculate viability_percent = (average reading / healthy baseline) × 100
+      Calculate death_percent = 100 - viability_percent
+      
+      Assess data quality:
+        IF variability is over 20%:
+          Mark data_quality as "too_variable"
+        ELSE IF we only have 2 readings:
+          Mark data_quality as "minimal_data"
+        ELSE:
+          Mark data_quality as "good"
+    
+    Add all these results as a new row in our results table
+
+================================================================================
+STEP 5: RANK COMPOUNDS BY ACTIVITY
+================================================================================
+
+Create summary table with columns:
+  compound_name, highest_death_percent, best_concentration, 
+  overall_data_quality, activity_level
+
+FOR each unique compound:
+  Find all results for this compound
+  
+  Look through all death percentages that aren't "cannot_calculate":
+    IF no valid death percentages exist:
+      Set highest_death_percent = 0
+      Set best_concentration = "none"
+      Set overall_data_quality = "unusable"
+      Set activity_level = "untestable"
+    ELSE:
+      Find the highest death percentage
+      Find which concentration gave that highest death
+      
+      Look at data quality across all concentrations:
+        IF any concentration has "good" quality:
+          Set overall_data_quality = "reliable"
+        ELSE IF any concentration has "minimal_data" quality:
+          Set overall_data_quality = "questionable"
+        ELSE:
+          Set overall_data_quality = "poor"
+      
+      Classify activity level:
+        IF highest death is 80% or more:
+          Set activity_level = "highly_active"
+        ELSE IF highest death is 50% or more:
+          Set activity_level = "moderately_active"
+        ELSE IF highest death is 20% or more:
+          Set activity_level = "weakly_active"
+        ELSE:
+          Set activity_level = "inactive"
+  
+  Add this compound's summary to the summary table
+
+Sort the summary table by highest_death_percent (best first)
+
+================================================================================
+STEP 6: IDENTIFY PROMISING COMPOUNDS  
+================================================================================
+
+Create list of promising compounds:
+  Start with empty list
+
+FOR each compound in the sorted summary:
+  IF highest death is 50% or more AND overall data quality isn't "poor":
+    Add compound to promising list
+    Print "PROMISING: [compound name] kills [percentage]% of cells at [concentration]"
+
+IF no compounds meet our criteria:
+  Print "WARNING: No compounds were promising enough (need 50%+ cell death with reliable data)"
+ELSE:
+  Print "Found [number] promising compounds for further testing"
+
+================================================================================
+STEP 7: CREATE QUALITY CONTROL REPORT
+================================================================================
+
+Print detailed quality report:
+  Print "=== EXPERIMENT QUALITY REPORT ==="
+  
+  Print "Control Performance:"
+  Print "  Healthy cells (DMSO): [average] ± [spread] (variability: [percent]%)"
+  Print "  Positive control: [average] ([percent]% of healthy)"
+  
+  Print "Data Problems Found:"
+  FOR each type of problem we found:
+    Print "  [problem type]: [count] cases"
+  
+  Print "Compound Data Quality:"
+  Count how many compounds fall into each quality category
+  FOR each quality level:
+    Print "  [quality level]: [count] compounds"
+  
+  Print "Activity Results:"
+  Count how many compounds fall into each activity level  
+  FOR each activity level:
+    Print "  [activity level]: [count] compounds"
+
+================================================================================
+STEP 8: CREATE CHARTS AND VISUALIZATIONS
+================================================================================
+
+Create Chart 1 - Top Active Compounds:
+  Make horizontal bar chart showing top 15 most active compounds
+  X-axis: compound names
+  Y-axis: highest death percentage achieved
+  Color the bars based on activity level:
+    Red bars: highly active (80%+)
+    Orange bars: moderately active (50-79%)
+    Yellow bars: weakly active (20-49%)  
+    Gray bars: inactive (under 20%)
+  Add title "Most Active Compounds - Cell Death Percentage"
+  Add horizontal line at 50% mark (our "promising" threshold)
+  Save as "top_active_compounds.png"
+
+Create Chart 2 - Control Performance Check:
+  Make scatter plot with two groups of dots:
+    Blue dots: all individual DMSO readings  
+    Red dots: all individual Doxorubicin readings
+  Add horizontal lines showing the averages
+  Add error bars showing the spread
+  Title: "Control Performance - Individual Measurements"
+  Y-axis label: "Absorbance Reading"
+  Save as "control_check.png"
+
+Create Chart 3 - Data Quality Overview:
+  Make pie chart showing how much data falls into each quality category
+  Slices: good_data, questionable_data, poor_data, unusable_data
+  Title: "Overall Data Quality Distribution"
+  Save as "data_quality_pie.png"
+
+================================================================================
+STEP 9: SAVE ALL RESULTS TO FILES
+================================================================================
+
+Save detailed results:
+  Save the complete results table to "detailed_results.csv"
+  Include every calculation and quality flag
+
+Save compound summary:
+  Save the summary table to "compound_ranking.csv"  
+  Sort by activity level (most active first)
+
+Save promising compounds:
+  Create table with just the promising compounds
+  Add column suggesting next steps for each
+  Save to "compounds_for_followup.csv"
+
+Write text report:
+  Save all the printed quality control information to "quality_report.txt"
+
+Print completion message:
+  Print "=== ANALYSIS FINISHED ==="
+  Print "Files created:"
+  Print "  - detailed_results.csv (all calculations)"
+  Print "  - compound_ranking.csv (summary rankings)"
+  Print "  - compounds_for_followup.csv (promising compounds)"
+  Print "  - quality_report.txt (experiment quality assessment)"
+  Print "  - [chart files].png (visualizations)"
+
+================================================================================
+STEP 10: FINAL VALIDATION AND SUMMARY
+================================================================================
+
+Run final checks:
+  Check that DMSO baseline makes sense (should be 0.5-2.0 typically)
+  Check that we found at least some active compounds  
+  Check that all output files were created successfully
+  Check that charts display properly
+
+Print final summary:
+  Print "=== FINAL SUMMARY ==="
+  Print "Total compounds tested: [number]"
+  Print "Compounds with usable data: [number]"
+  Print "Promising compounds found: [number]"
+  Print "Experiment quality: [acceptable/concerning based on controls]"
+
+IF any major problems detected:
+  Print "CAUTION: Review results carefully - some quality issues detected"
+ELSE:
+  Print "SUCCESS: Analysis completed with good data quality"
+
+END OF PSEUDOCODE

@@ -1,0 +1,437 @@
+PROBLEM B: IC50 DETERMINATION FROM DOSE-RESPONSE DATA
+
+PURPOSE: Calculate IC50 values (the concentration that kills half the cells) and rank compounds by how potent they are
+
+INPUT FILE: dose_response_data.csv
+- Contains: compound_name, concentration_uM, percent_inhibition, replicate_number
+- 15 compounds × 8 concentrations × 3 replicates = ~360 data points
+- Concentrations: 0.1, 0.3, 1, 3, 10, 30, 100, 300 μM
+
+OUTPUT FILES: IC50 results, potency rankings, quality reports, and charts
+
+================================================================================
+STEP 1: SETUP AND READ THE DATA
+================================================================================
+
+Load required tools:
+  - pandas (for handling data tables)
+  - matplotlib (for creating charts)
+  - numpy (for calculations and curve fitting)
+
+Read the data file:
+  Open the CSV file called 'dose_response_data.csv'
+  Store all the data in a table called 'raw_data'
+
+Check what we received:
+  Print how many rows and columns we have
+  Show the first few rows to understand the structure
+  Look for any completely missing information
+  Check that we have the expected concentrations (0.1 to 300 μM)
+
+================================================================================
+STEP 2: INITIAL DATA QUALITY CHECKS
+================================================================================
+
+Basic quality checks on ALL data:
+  FOR each percent_inhibition value in the data:
+    IF the inhibition is less than -50%:
+      Add to problem list with note "extreme negative inhibition"
+      Print warning message with compound and concentration
+    IF the inhibition is greater than 150%:
+      Add to problem list with note "impossible inhibition value"
+      Print warning message with compound and concentration
+    IF the inhibition value is missing:
+      Add to problem list with note "missing inhibition data"
+      Print warning message with compound and concentration
+
+Check concentration coverage:
+  Expected concentrations = [0.1, 0.3, 1, 3, 10, 30, 100, 300]
+  FOR each compound:
+    Find all concentrations tested for this compound
+    IF any expected concentration is missing:
+      Add to problem list with note "incomplete concentration series"
+      Print warning for this compound
+
+Keep a list of all problems we find
+
+================================================================================
+STEP 3: PROCESS DATA BY COMPOUND AND CONCENTRATION
+================================================================================
+
+Create empty table to store processed data with columns:
+  compound_name, concentration_uM, mean_inhibition, number_of_replicates,
+  variability_percent, data_quality, individual_values
+
+Get list of all unique compound names
+
+FOR each compound:
+  Get list of all concentrations for this compound
+  Sort concentrations from lowest to highest
+  
+  FOR each concentration:
+    Find all inhibition values for this compound at this concentration
+    Get the actual percent inhibition numbers for these replicates
+    
+    Remove any values we flagged as problematic earlier
+    Count how many good readings we have left
+    
+    IF we have fewer than 2 good readings:
+      Mark data_quality as "insufficient_replicates"
+      Set mean_inhibition to "cannot_calculate"
+      Set variability_percent to "cannot_calculate"
+    ELSE:
+      Calculate average of the good inhibition values
+      Calculate how spread out the values are (standard deviation)
+      Calculate variability_percent = (spread / average) × 100
+      
+      Assess data quality:
+        IF variability is over 25%:
+          Mark data_quality as "high_variability"
+        ELSE IF we only have 2 readings:
+          Mark data_quality as "minimal_replicates"
+        ELSE:
+          Mark data_quality as "good"
+    
+    Store individual replicate values for reference
+    Add all results as new row in processed data table
+
+================================================================================
+STEP 4: ASSESS DOSE-RESPONSE CURVE QUALITY
+================================================================================
+
+Create table to store curve quality assessment with columns:
+  compound_name, max_inhibition, min_inhibition, concentration_range_ok,
+  consistent_response, curve_shape, overall_curve_quality
+
+FOR each compound:
+  Find all processed data for this compound
+  Get list of mean inhibition values that aren't "cannot_calculate"
+  Get corresponding concentrations for valid data points
+  
+  IF fewer than 4 valid data points:
+    Mark overall_curve_quality as "not_enough_data"
+    Skip detailed analysis for this compound
+  ELSE:
+    Calculate max_inhibition from valid inhibition values
+    Calculate min_inhibition from valid inhibition values
+    
+    Check concentration range coverage:
+      IF highest concentration with data < 30 μM:
+        Mark concentration_range_ok as "missing_high_concentrations"
+      ELSE IF lowest concentration with data > 1 μM:
+        Mark concentration_range_ok as "missing_low_concentrations"  
+      ELSE:
+        Mark concentration_range_ok as "good_range"
+    
+    Check if response increases consistently with concentration:
+      Sort data points by concentration from low to high
+      Count how many times inhibition goes down when concentration goes up
+      IF this happens more than once:
+        Mark consistent_response as "inconsistent_pattern"
+      ELSE:
+        Mark consistent_response as "consistent_pattern"
+    
+    Assess overall curve shape:
+      IF max_inhibition < 30%:
+        Mark curve_shape as "weak_response"
+      ELSE IF max_inhibition > 90% AND min_inhibition < 10%:
+        Mark curve_shape as "complete_curve"
+      ELSE IF max_inhibition > 50%:
+        Mark curve_shape as "partial_curve"
+      ELSE:
+        Mark curve_shape as "unclear_response"
+    
+    Determine overall curve quality:
+      IF curve_shape is "weak_response":
+        Mark overall_curve_quality as "too_weak"
+      ELSE IF curve_shape is "unclear_response":
+        Mark overall_curve_quality as "poor_quality"
+      ELSE IF consistent_response is "inconsistent_pattern":
+        Mark overall_curve_quality as "questionable_pattern"
+      ELSE IF concentration_range_ok is not "good_range":
+        Mark overall_curve_quality as "limited_range"
+      ELSE:
+        Mark overall_curve_quality as "good_quality"
+
+================================================================================
+STEP 5: ESTIMATE IC50 VALUES
+================================================================================
+
+Create table to store IC50 results with columns:
+  compound_name, ic50_uM, ic50_confidence, how_we_calculated_it,
+  max_inhibition_achieved, can_we_calculate_ic50
+
+FOR each compound:
+  Get curve quality information for this compound
+  Get processed data for this compound (concentrations and mean inhibitions)
+  
+  IF overall_curve_quality is "not_enough_data":
+    Mark can_we_calculate_ic50 as "no_usable_data"
+    Set ic50_uM to "cannot_determine"
+    Set ic50_confidence to "none"
+    Set how_we_calculated_it to "no_data_available"
+  ELSE IF max_inhibition < 40%:
+    Mark can_we_calculate_ic50 as "never_gets_to_50_percent"  
+    Set ic50_uM to "weaker_than_300uM"
+    Set ic50_confidence to "low"
+    Set how_we_calculated_it to "estimated_beyond_data"
+  ELSE IF max_inhibition < 50%:
+    Mark can_we_calculate_ic50 as "barely_reaches_50_percent"
+    Set ic50_uM to "approximately_300uM"  
+    Set ic50_confidence to "very_low"
+    Set how_we_calculated_it to "estimated_beyond_data"
+  ELSE:
+    Mark can_we_calculate_ic50 as "yes_we_can_calculate"
+    
+    Find IC50 by finding where the curve crosses 50%:
+      Look for two neighboring data points where 50% falls between them
+      
+      IF we find an exact 50% match:
+        Set ic50_uM to that concentration
+        Set how_we_calculated_it to "exact_50_percent_match"
+        Set ic50_confidence to "high"
+      ELSE IF we find points on both sides of 50%:
+        Find the point below 50% and the point above 50%
+        Calculate where 50% would fall between these two points:
+          # Use straight line between the two points to estimate
+          ic50_uM = lower_concentration + 
+                   (50 - lower_inhibition) × (higher_concentration - lower_concentration) / 
+                   (higher_inhibition - lower_inhibition)
+        Set how_we_calculated_it to "calculated_between_two_points"
+        
+        Assess how confident we are based on data quality:
+          IF both surrounding points have "good" data quality:
+            Set ic50_confidence to "high"
+          ELSE IF at least one point has "good" data quality:
+            Set ic50_confidence to "medium"  
+          ELSE:
+            Set ic50_confidence to "low"
+      ELSE:
+        Set ic50_uM to "somewhere_between_tested_concentrations"
+        Set how_we_calculated_it to "rough_estimate_only"
+        Set ic50_confidence to "low"
+
+================================================================================
+STEP 6: CLASSIFY COMPOUND POTENCY AND RANK
+================================================================================
+
+Create compound ranking table with columns:
+  compound_name, ic50_uM_numeric, potency_class, confidence_level,
+  max_inhibition, curve_quality, recommended_action
+
+FOR each compound:
+  Get IC50 results for this compound
+  
+  Convert IC50 to numeric value for ranking:
+    IF ic50_uM contains a number:
+      Extract the numeric value as ic50_uM_numeric
+    ELSE IF ic50_uM is "weaker_than_300uM":
+      Set ic50_uM_numeric to 999 (for sorting purposes)
+    ELSE:
+      Set ic50_uM_numeric to 9999 (worst category for sorting)
+  
+  Classify potency based on IC50 value:
+    IF ic50_uM_numeric < 1:
+      Set potency_class to "highly_potent"
+    ELSE IF ic50_uM_numeric < 10:
+      Set potency_class to "moderately_potent"
+    ELSE IF ic50_uM_numeric < 100:
+      Set potency_class to "weakly_potent"
+    ELSE:
+      Set potency_class to "inactive_or_weak"
+  
+  Determine confidence level:
+    Get confidence from IC50 results
+    Get curve quality from curve assessment
+    
+    IF ic50_confidence is "high" AND curve_quality is "good_quality":
+      Set confidence_level to "high_confidence"
+    ELSE IF ic50_confidence is not "none" AND curve_quality is not "poor_quality":
+      Set confidence_level to "medium_confidence"
+    ELSE:
+      Set confidence_level to "low_confidence"
+  
+  Make recommendation for next steps:
+    IF potency_class is "highly_potent" AND confidence_level is "high_confidence":
+      Set recommended_action to "priority_for_followup"
+    ELSE IF potency_class is "moderately_potent" AND confidence_level is not "low_confidence":
+      Set recommended_action to "consider_for_followup"
+    ELSE IF confidence_level is "low_confidence" AND potency_class is not "inactive_or_weak":
+      Set recommended_action to "repeat_experiment"
+    ELSE:
+      Set recommended_action to "deprioritize"
+
+Sort ranking table by ic50_uM_numeric (most potent first)
+
+================================================================================
+STEP 7: GENERATE QUALITY AND RESULTS SUMMARY
+================================================================================
+
+Print comprehensive analysis report:
+  Print "=== IC50 ANALYSIS REPORT ==="
+  
+  Print "Data Quality Overview:"
+  Count compounds in each curve quality category
+  FOR each quality level:
+    Print "  [quality level]: [count] compounds"
+  
+  Print "IC50 Determination Success:"
+  Count compounds in each "can_we_calculate_ic50" category
+  FOR each category:
+    Print "  [category]: [count] compounds"
+  
+  Print "Potency Distribution:"
+  Count compounds in each potency class
+  FOR each potency class:
+    Print "  [potency class]: [count] compounds"
+  
+  Print "Confidence Assessment:"
+  Count compounds in each confidence level
+  FOR each confidence level:
+    Print "  [confidence level]: [count] compounds"
+  
+  Print "Recommended Actions:"
+  Count compounds in each recommendation category
+  FOR each recommendation:
+    Print "  [recommendation]: [count] compounds"
+  
+  Print "Top 5 Most Potent Compounds:"
+  FOR first 5 compounds in sorted ranking:
+    Print "  [compound]: IC50 = [value] μM ([confidence])"
+
+================================================================================
+STEP 8: CREATE VISUALIZATIONS
+================================================================================
+
+Create Chart 1 - Individual Dose-Response Curves:
+  Create grid of small charts (3 rows × 5 columns for 15 compounds)
+  FOR each compound:
+    Get processed data for this compound
+    Make a line chart with:
+      - X-axis: concentration (spread out evenly on powers of 10 scale)
+      - Y-axis: percent inhibition
+      - Error bars showing how variable the data was
+      - Horizontal line at 50% inhibition level
+    IF we calculated an IC50:
+      Draw vertical line showing where IC50 falls
+    Color the data points based on quality:
+      - Green dots: good quality data
+      - Yellow dots: questionable data  
+      - Red dots: poor quality data
+    Put title "[compound name] - IC50: [value]" on each small chart
+  
+  Put main title "All Compound Dose-Response Curves" on the whole figure
+  Save as "all_dose_response_curves.png"
+
+Create Chart 2 - Potency Ranking Chart:
+  Make horizontal bar chart showing the 12 most potent compounds
+  X-axis: IC50 values (spread on powers of 10 scale)
+  Y-axis: compound names
+  Color the bars to show potency level:
+    - Dark blue bars: highly potent (less than 1 μM)
+    - Blue bars: moderately potent (1 to 10 μM)  
+    - Light blue bars: weakly potent (10 to 100 μM)
+    - Gray bars: inactive or very weak (more than 100 μM)
+  Add vertical reference lines at 1 μM and 10 μM
+  Title: "Compound Potency Ranking - IC50 Values"
+  Save as "potency_ranking.png"
+
+Create Chart 3 - Data Quality Summary:
+  Make stacked bar chart showing data quality for each compound
+  X-axis: compound names
+  Y-axis: number of concentration points tested
+  Stack the bars in colored segments:
+    - Green segment: good quality data points
+    - Yellow segment: questionable data points
+    - Red segment: poor quality data points
+  Title: "Data Quality Summary for All Compounds"
+  Save as "data_quality_summary.png"
+
+Create Chart 4 - Quality vs Potency Comparison:
+  Make scatter plot (dot chart)
+  X-axis: IC50 values (powers of 10 scale, only compounds with calculated IC50)
+  Y-axis: maximum inhibition achieved by each compound
+  Color the dots by curve quality (green=good, yellow=questionable, red=poor)
+  Size the dots by confidence level (big=high confidence, small=low confidence)
+  Add reference lines at 50% inhibition and 10 μM IC50
+  Title: "Curve Quality vs Compound Potency"
+  Save as "quality_vs_potency.png"
+
+================================================================================
+STEP 9: SAVE ALL RESULTS TO FILES
+================================================================================
+
+Save processed data:
+  Save the processed data table to "processed_dose_response_data.csv"
+  Include all mean calculations and quality flags
+
+Save curve quality assessment:
+  Save curve quality table to "curve_quality_assessment.csv"
+  Include detailed quality metrics for each compound
+
+Save IC50 results:
+  Save IC50 results table to "ic50_calculations.csv"
+  Include estimation methods and confidence levels
+
+Save final rankings:
+  Save compound ranking table to "potency_ranking.csv"
+  Sort by potency (most potent first)
+
+Create summary for medicinal chemists:
+  Filter ranking table to show only compounds with IC50 < 50 μM
+  Add columns for structure-activity insights
+  Save to "promising_compounds_summary.csv"
+
+Write detailed text report:
+  Save all printed analysis information to "ic50_analysis_report.txt"
+  Include methodology notes and quality assessment
+
+Print completion message:
+  Print "=== ANALYSIS COMPLETED ==="
+  Print "Files created:"
+  Print "  - processed_dose_response_data.csv (all calculations)"
+  Print "  - curve_quality_assessment.csv (quality metrics)"
+  Print "  - ic50_calculations.csv (IC50 estimates and confidence)"
+  Print "  - potency_ranking.csv (compounds ranked by potency)"
+  Print "  - promising_compounds_summary.csv (top candidates)"
+  Print "  - ic50_analysis_report.txt (detailed report)"
+  Print "  - [chart files].png (visualizations)"
+
+================================================================================
+STEP 10: FINAL VALIDATION AND RECOMMENDATIONS
+================================================================================
+
+Perform validation checks:
+  Check that IC50 values are reasonable (between 0.01 and 1000 μM)
+  Check that at least some compounds have calculable IC50s
+  Check that curve quality assessment makes sense
+  Verify all output files were created successfully
+  Ensure visualizations display properly
+
+Print final summary and recommendations:
+  Print "=== FINAL SUMMARY AND RECOMMENDATIONS ==="
+  Print "Total compounds analyzed: [number]"
+  Print "Compounds with reliable IC50 values: [number]"
+  Print "Highly potent compounds (IC50 < 1 μM): [number]"
+  Print "Compounds recommended for follow-up: [number]"
+  Print "Compounds needing repeat experiments: [number]"
+
+Print next steps for research team:
+  Print "NEXT STEPS FOR MEDICINAL CHEMISTRY TEAM:"
+  FOR each compound with "priority_for_followup" recommendation:
+    Print "  HIGH PRIORITY: [compound] - IC50 = [value] μM"
+  FOR each compound with "consider_for_followup" recommendation:
+    Print "  CONSIDER: [compound] - IC50 = [value] μM"
+  FOR each compound with "repeat_experiment" recommendation:
+    Print "  REPEAT NEEDED: [compound] - [reason for repeat]"
+
+Assess overall experiment success:
+  Count compounds with high confidence IC50 values
+  IF high confidence count > 5:
+    Print "EXPERIMENT SUCCESS: Multiple reliable IC50 values obtained"
+  ELSE IF high confidence count > 0:
+    Print "PARTIAL SUCCESS: Some reliable IC50 values obtained"
+  ELSE:
+    Print "EXPERIMENT ISSUES: Consider reviewing protocols and repeating"
+
+END OF PSEUDOCODE
