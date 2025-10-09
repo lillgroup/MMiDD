@@ -33,7 +33,7 @@ Split the data into three groups:
   Group 3: All other rows (our test compounds)
 
 Basic data quality checks on ALL data:
-  FOR each absorbance reading in the data:
+  FOR each absorbance_reading in the data:
     IF the reading is negative:
       Add to problem list with note "negative reading"
       Print warning message
@@ -51,8 +51,8 @@ STEP 3: CHECK IF OUR CONTROLS WORKED PROPERLY
 ================================================================================
 
 Analyze DMSO control (should show healthy cells):
-  Calculate the average of all DMSO readings
-  Calculate how spread out the DMSO readings are (standard deviation)
+  Calculate the average of all DMSO absorbance_readings
+  Calculate how spread out the DMSO absorbance_readings are (standard deviation)
   Calculate variability percentage = (spread / average) × 100
   
   IF variability percentage is over 15%:
@@ -63,7 +63,7 @@ Analyze DMSO control (should show healthy cells):
   Print "Healthy cell baseline: [number]"
 
 Analyze Doxorubicin control (should show dead cells):
-  Calculate the average of all Doxorubicin readings
+  Calculate the average of all Doxorubicin absorbance_readings
   Calculate what percentage this is of the DMSO baseline
   
   IF this percentage is over 30%:
@@ -87,8 +87,8 @@ FOR each compound:
   Get list of all concentrations tested for this compound
   
   FOR each concentration:
-    Find all readings for this compound at this concentration
-    Get the actual absorbance numbers for these replicates
+  Find all absorbance_readings for this compound at this concentration
+  Get the actual absorbance_reading numbers for these replicates
     
     Remove any readings we flagged as problematic earlier
     Count how many good readings we have left
