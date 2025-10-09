@@ -1,0 +1,3 @@
+In the file "01_introduction_python_programming/02_computer_based_problem_solving/02_computer_based_problem_solving.md", you will find slides for a problem called "Problem B" that I'm trying to create a script for. I already created a pseudo-code for the solution in the file "01_introduction_python_programming/04_application/pseudocode_B.txt".
+
+Can you please help me translate the pseudo-code into a Python script? The script should be saved in the file "01_introduction_python_programming/04_application/problem_B_solution.py". Please ensure that the script closeley follows the logic and structure outlined in the pseudo-code and that it is properly formatted and commented for clarity. Thanks.
