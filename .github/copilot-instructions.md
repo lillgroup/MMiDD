@@ -368,26 +368,8 @@ df_csv.to_csv('filtered.csv', index=False)
 ### 12. Matplotlib Plotting
 
 **ALLOWED:**
-- Import statement: `import matplotlib.pyplot as plt`
-- Creating figures: `plt.figure(figsize=(width, height))`
-- Line plots: `plt.plot(x, y)` with parameters: `marker`, `linewidth`, `color`, `label`
-- Scatter plots: `plt.scatter(x, y)` with parameters: `s`, `c`, `alpha`, `edgecolors`, `cmap`
-- Bar plots: `plt.bar(x, y)` with parameters: `color`, `alpha`, `edgecolor`
-- Histograms: `plt.hist(data)` with parameters: `bins`, `color`, `alpha`, `edgecolor`
-- Semi-log plots: `plt.semilogx(x, y)`
-- Labels: `plt.xlabel()`, `plt.ylabel()`, `plt.title()` with `fontsize`, `fontweight` parameters
-- Reference lines: `plt.axhline()`, `plt.axvline()` with `color`, `linestyle`, `alpha`, `label` parameters
-- Legend: `plt.legend()` with `loc`, `fontsize` parameters
-- Grid: `plt.grid()` with `alpha`, `axis` parameters
-- Limits: `plt.ylim()`, `plt.xlim()`
-- Saving figures: `plt.savefig('filename.png', dpi=300, bbox_inches='tight')`
-- Closing figures: `plt.close()`
-- Displaying plots: `plt.show()`
-- Subplots: `fig, axes = plt.subplots(rows, cols, figsize=(w, h))`
-- Subplot title: `fig.suptitle()`
-- Layout adjustment: `plt.tight_layout()`
-- Adding text to bars (accessing bar properties): `bar.get_x()`, `bar.get_width()`, `bar.get_height()`
-- Adding text: `plt.text(x, y, text, ha='center', va='bottom', fontsize=10, fontweight='bold')`
+
+--- All plots must use the tab10 color palette from matplotlib for colors. For bar, scatter, pie, and other plots, use colors from `matplotlib.cm.get_cmap('tab10').colors` and assign colors consistently to categories or groups.
 
 **NOT ALLOWED:**
 - Advanced plot types not listed above
