@@ -219,49 +219,50 @@ Create compound ranking table with columns:
   compound_name, ic50_uM_numeric, potency_class, confidence_level,
   max_inhibition, curve_quality, recommended_action
 
-FOR each compound:
-  Get IC50 results for this compound
-  
-  Convert IC50 to numeric value for ranking:
-    IF ic50_uM contains a number:
-      Extract the numeric value as ic50_uM_numeric
-    ELSE IF ic50_uM is "weaker_than_300uM":
-      Set ic50_uM_numeric to 999 (for sorting purposes)
-    ELSE:
-      Set ic50_uM_numeric to 9999 (worst category for sorting)
-  
-  Classify potency based on IC50 value:
-    IF ic50_uM_numeric < 1:
-      Set potency_class to "highly_potent"
-    ELSE IF ic50_uM_numeric < 10:
-      Set potency_class to "moderately_potent"
-    ELSE IF ic50_uM_numeric < 100:
-      Set potency_class to "weakly_potent"
-    ELSE:
-      Set potency_class to "inactive_or_weak"
-  
-  Determine confidence level:
-    Get confidence from IC50 results
-    Get curve quality from curve assessment
+  FOR each compound:
+    Get IC50 results for this compound
+    Get curve quality from the curve quality table (do NOT overwrite the curve quality table variable; use a new variable name like curve_quality_value for the value)
     
-    IF ic50_confidence is "high" AND curve_quality is "good_quality":
-      Set confidence_level to "high_confidence"
-    ELSE IF ic50_confidence is not "none" AND curve_quality is not "poor_quality":
-      Set confidence_level to "medium_confidence"
-    ELSE:
-      Set confidence_level to "low_confidence"
-  
-  Make recommendation for next steps:
-    IF potency_class is "highly_potent" AND confidence_level is "high_confidence":
-      Set recommended_action to "priority_for_followup"
-    ELSE IF potency_class is "moderately_potent" AND confidence_level is not "low_confidence":
-      Set recommended_action to "consider_for_followup"
-    ELSE IF confidence_level is "low_confidence" AND potency_class is not "inactive_or_weak":
-      Set recommended_action to "repeat_experiment"
-    ELSE:
-      Set recommended_action to "deprioritize"
+    Convert IC50 to numeric value for ranking:
+      IF ic50_uM contains a number:
+        Extract the numeric value as ic50_uM_numeric
+      ELSE IF ic50_uM is "weaker_than_300uM":
+        Set ic50_uM_numeric to 999 (for sorting purposes)
+      ELSE:
+        Set ic50_uM_numeric to 9999 (worst category for sorting)
+    
+    Classify potency based on IC50 value:
+      IF ic50_uM_numeric < 1:
+        Set potency_class to "highly_potent"
+      ELSE IF ic50_uM_numeric < 10:
+        Set potency_class to "moderately_potent"
+      ELSE IF ic50_uM_numeric < 100:
+        Set potency_class to "weakly_potent"
+      ELSE:
+        Set potency_class to "inactive_or_weak"
+    
+    Determine confidence level:
+      Get confidence from IC50 results
+      Get curve quality value from curve quality table
+      
+      IF ic50_confidence is "high" AND curve_quality_value is "good_quality":
+        Set confidence_level to "high_confidence"
+      ELSE IF ic50_confidence is not "none" AND curve_quality_value is not "poor_quality":
+        Set confidence_level to "medium_confidence"
+      ELSE:
+        Set confidence_level to "low_confidence"
+    
+    Make recommendation for next steps:
+      IF potency_class is "highly_potent" AND confidence_level is "high_confidence":
+        Set recommended_action to "priority_for_followup"
+      ELSE IF potency_class is "moderately_potent" AND confidence_level is not "low_confidence":
+        Set recommended_action to "consider_for_followup"
+      ELSE IF confidence_level is "low_confidence" AND potency_class is not "inactive_or_weak":
+        Set recommended_action to "repeat_experiment"
+      ELSE:
+        Set recommended_action to "deprioritize"
 
-Sort ranking table by ic50_uM_numeric (most potent first)
+  Sort ranking table by ic50_uM_numeric (most potent first)
 
 ================================================================================
 STEP 7: GENERATE QUALITY AND RESULTS SUMMARY
@@ -310,7 +311,7 @@ Create Chart 1 - Individual Dose-Response Curves:
     Make a line chart with:
       - X-axis: concentration (spread out evenly on powers of 10 scale)
       - Y-axis: percent inhibition
-      - Error bars showing how variable the data was
+  - Error bars showing how variable the data was (make sure error bars are non-negative; replace negative values with zero before plotting)
       - Horizontal line at 50% inhibition level
     IF we calculated an IC50:
       Draw vertical line showing where IC50 falls
