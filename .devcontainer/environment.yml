@@ -1,0 +1,17 @@
+name: mmidd
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - matplotlib
+  - pandas
+  - scipy
+  - seaborn
+  - scikit-learn
+  - biopython
+  - rdkit
+  - openbabel
+  - ipykernel
+  - jupyter
+  - pip
