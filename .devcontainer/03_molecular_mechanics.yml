@@ -1,0 +1,11 @@
+name: 03_molecular_mechanics
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - numpy=1.19.5
+  - ipykernel
+  - jupyter
+  - pip
+  - pip:
+      - ensembler-rinikerlab
