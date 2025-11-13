@@ -14,8 +14,11 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
+	// Run commands after the container is created. This is a good place to install any dependencies because it will be cached.
+	"onCreateCommand": "micromamba env create -y -f .devcontainer/00_mmidd.yml && micromamba env create -y -f .devcontainer/03_molecular_mechanics.yml && micromamba env create -y -f .devcontainer/05_molecular_docking.yml",
+
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "micromamba env create -y -f .devcontainer/00_mmidd.yml && micromamba env create -y -f .devcontainer/03_molecular_mechanics.yml && micromamba env create -y -f .devcontainer/05_molecular_docking.yml",
+	// "postCreateCommand": "",
 	
 	// Configure tool-specific properties.
 	"customizations": {
