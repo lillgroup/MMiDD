@@ -7,10 +7,9 @@ dependencies:
   - smina
   - openbabel
   - rdkit
-  - notebook
+  - jupyter
   - ipykernel
-  - ipython
-  - nb_conda_kernels
+  - ipywidgets
   - plotly
   - tqdm
   - seaborn
