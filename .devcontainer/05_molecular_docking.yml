@@ -1,11 +1,10 @@
 name: 05_molecular_docking
 channels:
-  - defaults
-  - schrodinger
   - conda-forge
+  - schrodinger
 dependencies:
+  - python=3.11
   - smina
-  - python
   - openbabel
   - rdkit
   - notebook
@@ -16,7 +15,7 @@ dependencies:
   - tqdm
   - seaborn
   - scikit-learn
-  - pymol-bundle
+  - pymol-open-source
   - statsmodels
   - pip
   - pip:
