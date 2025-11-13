@@ -1,0 +1,23 @@
+name: 05_molecular_docking
+channels:
+  - defaults
+  - schrodinger
+  - conda-forge
+dependencies:
+  - smina
+  - python
+  - openbabel
+  - rdkit
+  - notebook
+  - ipykernel
+  - ipython
+  - nb_conda_kernels
+  - plotly
+  - tqdm
+  - seaborn
+  - scikit-learn
+  - pymol-bundle
+  - statsmodels
+  - pip
+  - pip:
+    - molplotly
