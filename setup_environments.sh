@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Function to print colored messages
 print_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+    echo -e "${BLUE}[INFO]${NC} $1"
 }
 
 print_warning() {

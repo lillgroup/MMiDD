@@ -7,12 +7,12 @@ Molecular Modelling in Drug Design
 
 **Run setup:**
 ```bash
-wget -qO- https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
+curl -sSL https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
 ```
 
-Alternative (if wget not available):
+Alternative (if curl not available):
 ```bash
-curl -sSL https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
+wget -qO- https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
 ```
 
 The script will:
