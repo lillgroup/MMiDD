@@ -124,17 +124,15 @@ selected_env_file="${env_files[$selection]}"
 selected_env_name=$(basename "$selected_env_file" .yml)
 
 echo ""
-print_info "Step 3/3: Creating environment '$selected_env_name'..."
+print_info "Step 3/3: Setting up environment '$selected_env_name'..."
 
-# Check if environment already exists and remove it
-if micromamba env list | grep -q "$selected_env_name"; then
-    print_warning "Environment '$selected_env_name' already exists. Removing it..."
+# Use env remove + create approach (micromamba doesn't have a force flag)
+# This ensures a clean environment installation
+if micromamba env list | grep -q "^$selected_env_name "; then
     micromamba env remove -n "$selected_env_name" -y
-    print_success "Existing environment removed"
 fi
-
-# Create the selected environment
 micromamba env create -y -f "$selected_env_file"
+
 print_success "Environment '$selected_env_name' created successfully"
 echo ""
 
