@@ -105,8 +105,13 @@ echo "-----------------------------------------------"
 echo ""
 
 # Prompt user to select an environment
+# When piped through wget/curl, we need to read from the terminal directly
 print_prompt "Enter the number of the environment you want to install (0-$((${#env_files[@]}-1))):"
-read -r selection
+if [ -t 0 ]; then
+    read -r selection
+else
+    read -r selection </dev/tty
+fi
 
 # Validate the selection
 if ! [[ "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 0 ] || [ "$selection" -ge ${#env_files[@]} ]; then
