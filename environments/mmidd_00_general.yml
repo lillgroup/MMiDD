@@ -1,4 +1,4 @@
-name: 00_mmidd
+name: mmidd_00_general
 channels:
   - conda-forge
 dependencies:

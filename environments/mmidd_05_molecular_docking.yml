@@ -1,4 +1,4 @@
-name: 05_molecular_docking
+name: mmidd_05_molecular_docking
 channels:
   - conda-forge
   - schrodinger
