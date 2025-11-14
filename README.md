@@ -3,16 +3,11 @@ Molecular Modelling in Drug Design
 
 ## Setup
 
-**Prerequisites:** Install [git](https://git-scm.com/downloads) and [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html)
+**Prerequisites:** Install [git](https://git-scm.com/downloads), [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html), and ensure [curl](https://curl.se/) is available
 
 **Run setup:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
-```
-
-Alternative (if curl not available):
-```bash
-wget -qO- https://raw.githubusercontent.com/lillgroup/MMiDD/COMMIT_SHA_PLACEHOLDER/setup_environments.sh | bash
+curl -sSL https://raw.githubusercontent.com/lillgroup/MMiDD/de301f487aa99741d9c422dbbb789fe27a389db9/setup_environments.sh | bash
 ```
 
 The script will:
