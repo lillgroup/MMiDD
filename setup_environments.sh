@@ -128,7 +128,7 @@ print_info "Step 3/3: Setting up environment '$selected_env_name'..."
 
 # Use env remove + create approach (micromamba doesn't have a force flag)
 # This ensures a clean environment installation
-if micromamba env list | grep -q "^$selected_env_name "; then
+if micromamba env list | awk '{print $1}' | grep -q "^${selected_env_name}$"; then
     micromamba env remove -n "$selected_env_name" -y
 fi
 micromamba env create -y -f "$selected_env_file"
