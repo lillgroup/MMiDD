@@ -82,7 +82,10 @@ echo "Available environments:"
 echo "-----------------------------------------------"
 
 # Find all .yml files in environments directory and store them in an array
-mapfile -t env_files < <(find environments -name "*.yml" -type f | sort)
+env_files=()
+while IFS= read -r file; do
+    env_files+=("$file")
+done < <(find environments -name "*.yml" -type f | sort)
 
 # Check if any environment files were found
 if [ ${#env_files[@]} -eq 0 ]; then
